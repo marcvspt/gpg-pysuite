@@ -1,4 +1,2 @@
 gnupg
-tempfile
 argparse
-subprocess
