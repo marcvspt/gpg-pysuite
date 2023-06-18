@@ -30,11 +30,11 @@ def gen_keys(passwd, name, email, base_name, bits):
     public_key = gpg.export_keys(key.fingerprint)
     private_key = gpg.export_keys(key.fingerprint, secret=True, passphrase=passwd)
 
-    with open(base_name + '.pub.asc', 'w') as file:
-        file.write(public_key)
+    with open(base_name + '.pub.asc', 'w') as f:
+        f.write(public_key)
 
-    with open(base_name + '.key.asc', 'w') as file:
-        file.write(private_key)
+    with open(base_name + '.key.asc', 'w') as f:
+        f.write(private_key)
 
     rmdir(temp_dir)
     print('\n[+] Keys generated successfully\n')

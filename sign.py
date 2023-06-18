@@ -40,7 +40,6 @@ def sign_text(pubkey, privkey, passwd, message):
     else:
         raise ValueError('\n[!]Signature verification failed')
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Message signing with PGP')
     parser.add_argument('-c', '--public-key', dest='pubkey' , type=str, help='Path to PGP Public Key file', required=True)
@@ -48,7 +47,6 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--passphrase', dest='passphrase' , type=str, help='PGP Private Key password', required=True)
     parser.add_argument('-m', '--message', dest='message', type=str, help='Message to sign', required=True)
     args = parser.parse_args()
-
 
     signed_text = sign_text(args.pubkey, args.privkey, args.passphrase, args.message)
     print(signed_text)
