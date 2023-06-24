@@ -5,6 +5,7 @@ import tempfile
 import argparse
 import subprocess
 import os
+import sys
 
 def rmdir(directory):
     sistema_operativo = os.name
@@ -21,7 +22,9 @@ def sign_text(pubkey, privkey, passwd, message):
         key_data = f.read()
         import_result = gpg.import_keys(key_data)
         if import_result.count == 0:
-            raise ValueError('\n[-]Failed to import private key\n')
+            rmdir(temp_dir)
+            print('\n[!] Failed to import private key\n')
+            sys.exit(1)
 
     private_key = import_result.results[0]['fingerprint']
 
@@ -29,16 +32,19 @@ def sign_text(pubkey, privkey, passwd, message):
         key_data = f.read()
         import_result = gpg.import_keys(key_data)
         if import_result.count == 0:
-            raise ValueError('\n[-]Failed to import public key\n')
+            rmdir(temp_dir)
+            print('\n[!] Failed to import public key\n')
+            sys.exit(1)
 
     signed_data = gpg.sign(message, keyid=private_key, passphrase=passwd)
     verification_result = gpg.verify(signed_data.data)
 
     rmdir(temp_dir)
     if verification_result.valid:
-        return signed_data.data.decode()
+        print('\n[+] Message signed successfully\n')
+        return signed_data.data.decode('utf-8')
     else:
-        raise ValueError('\n[!]Signature verification failed')
+        return "\n[!] Error signing message\n"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Message signing with PGP')

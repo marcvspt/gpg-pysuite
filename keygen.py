@@ -5,6 +5,7 @@ import tempfile
 import argparse
 import subprocess
 import os
+import sys
 
 def rmdir(directory):
     sistema_operativo = os.name
@@ -25,16 +26,28 @@ def gen_keys(passwd, name, email, base_name, bits):
         name_email=email
     )
 
-    key = gpg.gen_key(input_data)
+    try:
+        key = gpg.gen_key(input_data)
+    except:
+        print("\n[-] Error generating PGP key pair\n")
+        sys.exit(1)
 
     public_key = gpg.export_keys(key.fingerprint)
     private_key = gpg.export_keys(key.fingerprint, secret=True, passphrase=passwd)
 
-    with open(base_name + '.pub.asc', 'w') as f:
-        f.write(public_key)
+    try:
+        with open(base_name + '.pub.asc', 'w') as f:
+            f.write(public_key)
+    except:
+        print("\n[!] Error exporting public key\n")
+        sys.exit(1)
 
-    with open(base_name + '.key.asc', 'w') as f:
-        f.write(private_key)
+    try:
+        with open(base_name + '.key.asc', 'w') as f:
+            f.write(private_key)
+    except:
+        print("\n[!] Error exporting private key\n")
+        sys.exit(1)
 
     rmdir(temp_dir)
     print('\n[+] Keys generated successfully\n')

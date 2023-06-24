@@ -5,6 +5,7 @@ import tempfile
 import argparse
 import subprocess
 import os
+import sys
 
 def rmdir(directory):
     sistema_operativo = os.name
@@ -21,20 +22,26 @@ def verify_signature(pubkey, message):
         key_data = f.read()
         import_result = gpg.import_keys(key_data)
         if import_result.count == 0:
-            raise ValueError('\n[-]Failed to import public key\n')
+            rmdir(temp_dir)
+            print('\n[!] Failed to import public key\n')
+            sys.exit(1)
 
     public_key = import_result.fingerprints[0]
 
     with open(message, 'r') as f:
         signed_message = f.read()
+        if signed_message is None:
+            rmdir(temp_dir)
+            print("\n[!] Empty or corrupted signed message. Unable to verify\n")
+            sys.exit(1)
 
     verified = gpg.verify(signed_message)
 
     rmdir(temp_dir)
     if verified.fingerprint == public_key and verified.valid:
-        print("\n[+] La firma es válida\n")
+        print("\n[+] Valid signature\n")
     else:
-        print("\n[!]La firma no es válida\n")
+        print("\n[-] Invalid signature\n")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Verify signed message with PGP')

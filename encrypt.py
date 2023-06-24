@@ -5,6 +5,7 @@ import tempfile
 import argparse
 import subprocess
 import os
+import sys
 
 def rmdir(directory):
     sistema_operativo = os.name
@@ -21,17 +22,19 @@ def encrypt_message(pubkey, message):
         key_data = f.read()
         import_result = gpg.import_keys(key_data)
         if import_result.count == 0:
-            raise ValueError('\n[-]Failed to import public key\n')
+            rmdir(temp_dir)
+            print('\n[!] Failed to import public key\n')
+            sys.exit(1)
 
     public_key = import_result.fingerprints[0]
-
     encrypted_data = gpg.encrypt(message, public_key, always_trust=True)
 
     rmdir(temp_dir)
     if encrypted_data.ok:
+        print('\n[+] Message encrypted successfully\n')
         return encrypted_data.data.decode('utf-8')
     else:
-        return None
+        return "\n[-] Error encrypting data\n"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Message encryption with PGP')
@@ -40,5 +43,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     encrypted_message = encrypt_message(args.pubkey, args.message)
-
     print(encrypted_message)
