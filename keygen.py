@@ -18,34 +18,36 @@ def gen_keys(passwd, name, email, base_name, bits):
     temp_dir = tempfile.mkdtemp()
     gpg = gnupg.GPG(gnupghome=temp_dir)
 
-    input_data = gpg.gen_key_input(
-        key_type="RSA",
-        key_length=bits,
-        passphrase=passwd,
-        name_real=name,
-        name_email=email
-    )
-
     try:
+        input_data = gpg.gen_key_input(
+            key_type="RSA",
+            key_length=bits,
+            passphrase=passwd,
+            name_real=name,
+            name_email=email
+        )
+
         key = gpg.gen_key(input_data)
     except:
+        rmdir(temp_dir)
         print("\n[-] Error generating PGP key pair\n")
         sys.exit(1)
 
-    public_key = gpg.export_keys(key.fingerprint)
-    private_key = gpg.export_keys(key.fingerprint, secret=True, passphrase=passwd)
-
     try:
+        public_key = gpg.export_keys(key.fingerprint)
         with open(base_name + '.pub.asc', 'w') as f:
             f.write(public_key)
     except:
+        rmdir(temp_dir)
         print("\n[!] Error exporting public key\n")
         sys.exit(1)
 
     try:
+        private_key = gpg.export_keys(key.fingerprint, secret=True, passphrase=passwd)
         with open(base_name + '.key.asc', 'w') as f:
             f.write(private_key)
     except:
+        rmdir(temp_dir)
         print("\n[!] Error exporting private key\n")
         sys.exit(1)
 

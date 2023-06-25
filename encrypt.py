@@ -14,33 +14,50 @@ def rmdir(directory):
     elif sistema_operativo == 'nt':
         subprocess.run(['rmdir', '/s', '/q', directory])
 
-def encrypt_message(pubkey, message):
+def encrypt_message(pgpkey, message, outfile):
     temp_dir = tempfile.mkdtemp()
     gpg = gnupg.GPG(gnupghome=temp_dir)
 
-    with open(pubkey, 'rb') as f:
-        key_data = f.read()
-        import_result = gpg.import_keys(key_data)
-        if import_result.count == 0:
-            rmdir(temp_dir)
-            print('\n[!] Failed to import public key\n')
-            sys.exit(1)
+    try:
+        with open(pgpkey, 'r') as f:
+            key_data = f.read()
+            import_result = gpg.import_keys(key_data)
+            if import_result.count == 0:
+                rmdir(temp_dir)
+                print('\n[!] Failed to import public key\n')
+                sys.exit(1)
+    except:
+        rmdir(temp_dir)
+        print("\n[!] No such public key\n")
+        sys.exit(1)
 
-    public_key = import_result.fingerprints[0]
-    encrypted_data = gpg.encrypt(message, public_key, always_trust=True)
+    try:
+        pgp_key = import_result.fingerprints[0]
+        encrypted_data = gpg.encrypt(message, pgp_key, always_trust=True)
+        encrypted_message = encrypted_data.data.decode('utf-8')
 
-    rmdir(temp_dir)
-    if encrypted_data.ok:
-        print('\n[+] Message encrypted successfully\n')
-        return encrypted_data.data.decode('utf-8')
-    else:
-        return "\n[-] Error encrypting data\n"
+        rmdir(temp_dir)
+        if outfile:
+            try:
+                with open(outfile + ".encrypted", 'w') as f:
+                    f.write(encrypted_message)
+
+                print('\n[+] Message encrypted saved in %s\n' % (outfile + ".encrypted"))
+            except:
+                print("\n[!] Error Saving encrypted data in a file\n")
+        else:
+            print('\n[+] Message encrypted successfully\n')
+            print(encrypted_message)
+    except:
+        rmdir(temp_dir)
+        print("\n[!] Error encrypting data\n")
+        sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Message encryption with PGP')
-    parser.add_argument('-c', '--public-key', dest='pubkey' , type=str, help='Path to PGP Public Key file', required=True)
+    parser.add_argument('-k', '--pgp-key', dest='pgpkey' , type=str, help='Path to PGP Public Key (Asymmetric) or Private Key (Symmetric)', required=True)
     parser.add_argument('-m', '--message', dest='message', type=str, help='Message to encrypt', required=True)
+    parser.add_argument('-o', '--outfile', dest='outfile', type=str, help='Path to save the PGP Message encrypted', required=False)
     args = parser.parse_args()
 
-    encrypted_message = encrypt_message(args.pubkey, args.message)
-    print(encrypted_message)
+    encrypt_message(args.pgpkey, args.message, args.outfile)
