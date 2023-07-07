@@ -10,7 +10,7 @@ This tools doesn't import the PGP keys in the machine, just the `keygen.py` expo
 
 ## Install
 ```bash
-git clone https://github.com/atriox2510/pgp-pysuite
+git clone https://github.com/marcvspt/pgp-pysuite
 cd pgp-pysuite
 python3 -m pip install -r requeriments.txt
 ```
