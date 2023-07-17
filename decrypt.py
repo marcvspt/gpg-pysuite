@@ -4,15 +4,10 @@ import gnupg
 import tempfile
 import argparse
 import subprocess
-import os
 import sys
 
 def rmdir(directory):
-    sistema_operativo = os.name
-    if sistema_operativo == 'posix':
-        subprocess.run(['rm', '-rf', directory])
-    elif sistema_operativo == 'nt':
-        subprocess.run(['rmdir', '/s', '/q', directory])
+    subprocess.run(['rmdir', '/s', '/q', directory])
 
 def decrypt_message(privkey, passwd, message, outfile):
     temp_dir = tempfile.mkdtemp()
