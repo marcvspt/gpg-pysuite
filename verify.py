@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 def rmdir(directory):
-    subprocess.run(['rmdir', '/s', '/q', directory])
+    subprocess.run(['rm', '-rf', directory])
 
 def verify_signature(pubkey, message):
     temp_dir = tempfile.mkdtemp()

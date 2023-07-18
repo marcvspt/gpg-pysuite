@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 def rmdir(directory):
-    subprocess.run(['rmdir', '/s', '/q', directory])
+    subprocess.run(['rm', '-rf', directory])
 
 def decrypt_message(privkey, passwd, message, outfile):
     temp_dir = tempfile.mkdtemp()
