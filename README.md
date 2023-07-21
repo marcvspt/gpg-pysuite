@@ -12,8 +12,8 @@ In this repository we have a  tool that use `python-gnupg`, **PGP Python Suite**
 
 ## Install
 ```bash
-git clone https://github.com/marcvspt/pgp-pysuite
-cd pgp-pysuite
+git clone https://github.com/marcvspt/pgpysuite
+cd pgpysuite
 python3 -m pip install -r requeriments.txt
 python3 pgpysuite.py -h
 ```
