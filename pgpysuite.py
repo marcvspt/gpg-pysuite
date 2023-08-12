@@ -8,15 +8,15 @@ import sys
 
 class PGPPySuite:
     def __init__(self):
-        self.temp_dir = tempfile.mkdtemp()
+        self._temp_dir = tempfile.mkdtemp()
 
     # DELETE TEMP GNUPG DIRECTORIES
-    def rmdir(self, directory):
+    def __cleanup__(self, directory):
         subprocess.run(['rm', '-rf', directory])
 
     # GENERATE KEYS
     def gen_keys(self, passwd, name, email, base_name, bits):
-        gpg = gnupg.GPG(gnupghome=self.temp_dir)
+        gpg = gnupg.GPG(gnupghome=self._temp_dir)
 
         try:
             input_data = gpg.gen_key_input(
@@ -29,7 +29,7 @@ class PGPPySuite:
 
             key = gpg.gen_key(input_data)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[-] Error generating PGP key pair\n")
             sys.exit(1)
 
@@ -38,7 +38,7 @@ class PGPPySuite:
             with open(base_name + '.pub.asc', 'w') as f:
                 f.write(public_key)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error exporting public key\n")
             sys.exit(1)
 
@@ -47,27 +47,27 @@ class PGPPySuite:
             with open(base_name + '.key.asc', 'w') as f:
                 f.write(private_key)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error exporting private key\n")
             sys.exit(1)
 
-        self.rmdir(self.temp_dir)
+        self.__cleanup__(self._temp_dir)
         print('\n[+] Keys generated successfully\n')
 
     # ENCRYPT MESSAGE
-    def encrypt_message(self, pgpkey, message, outfile):
-        gpg = gnupg.GPG(gnupghome=self.temp_dir)
+    def encrypt_message(self, pgp_key, message, outfile):
+        gpg = gnupg.GPG(gnupghome=self._temp_dir)
 
         try:
-            with open(pgpkey, 'r') as f:
+            with open(pgp_key, 'r') as f:
                 key_data = f.read()
                 import_result = gpg.import_keys(key_data)
                 if import_result.count == 0:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print('\n[!] Failed to import public key\n')
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such public/private key\n")
             sys.exit(1)
 
@@ -76,7 +76,7 @@ class PGPPySuite:
             encrypted_data = gpg.encrypt(message, pgp_key, always_trust=True)
             encrypted_message = encrypted_data.data.decode('utf-8')
 
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             if outfile:
                 try:
                     outfile = outfile + ".encrypted"
@@ -90,24 +90,24 @@ class PGPPySuite:
                 print('\n[+] Message encrypted successfully\n')
                 print(encrypted_message)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error encrypting data\n")
             sys.exit(1)
 
     # DECRYPT MESSAGES
-    def decrypt_message(self, privkey, passwd, message, outfile):
-        gpg = gnupg.GPG(gnupghome=self.temp_dir)
+    def decrypt_message(self, priv_key, passwd, message, outfile):
+        gpg = gnupg.GPG(gnupghome=self._temp_dir)
 
         try:
-            with open(privkey, 'r') as f:
+            with open(priv_key, 'r') as f:
                 key_data = f.read()
                 import_result = gpg.import_keys(key_data)
                 if import_result.count == 0:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print('\n[!] Failed to import private key\n')
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such private key\n")
             sys.exit(1)
 
@@ -115,11 +115,11 @@ class PGPPySuite:
             with open(message, 'r') as f:
                 encrypted_data = f.read()
                 if encrypted_data is None:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print("\n[!] Empty or corrupted encrypted message. Unable to decrypt\n")
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such encrypted message\n")
             sys.exit(1)
 
@@ -127,13 +127,13 @@ class PGPPySuite:
             decrypted_data = gpg.decrypt(encrypted_data, passphrase=passwd, always_trust=True)
             #pdb.set_trace()
             if not decrypted_data.ok:
-                self.rmdir(self.temp_dir)
+                self.__cleanup__(self._temp_dir)
                 print("\n[!] Incorrect passphrase\n")
                 sys.exit(1)
 
             decrypted_message = decrypted_data.data.decode('utf-8')
 
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             if outfile:
                 try:
                     outfile = outfile + ".txt"
@@ -147,52 +147,51 @@ class PGPPySuite:
                 print('\n[+] Message decrypted successfully\n')
                 print(decrypted_message)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error decrypting data\n")
 
     # SIGNING MESSAGES
-    def sign_message(self, pubkey, privkey, passwd, message, outfile):
-        gpg = gnupg.GPG(gnupghome=self.temp_dir)
+    def sign_message(self, pub_key, priv_key, passwd, message, outfile):
+        gpg = gnupg.GPG(gnupghome=self._temp_dir)
 
         try:
-            with open(privkey, 'r') as f:
+            with open(priv_key, 'r') as f:
                 key_data = f.read()
                 import_result = gpg.import_keys(key_data)
                 if import_result.count == 0:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print('\n[!] Failed to import private key\n')
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such private key\n")
             sys.exit(1)
 
         private_key = import_result.results[0]['fingerprint']
 
         try:
-            with open(pubkey, 'r') as f:
+            with open(pub_key, 'r') as f:
                 key_data = f.read()
                 import_result = gpg.import_keys(key_data)
                 if import_result.count == 0:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print('\n[!] Failed to import public key\n')
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such public key\n")
             sys.exit(1)
 
         try:
             signed_data = gpg.sign(message, keyid=private_key, passphrase=passwd)
             if not signed_data.status == 'signature created':
-                self.rmdir(self.temp_dir)
+                self.__cleanup__(self._temp_dir)
                 print("\n[!] Incorrect passphrase\n")
                 sys.exit(1)
 
-            verification_result = gpg.verify(signed_data.data)
             signed_message = signed_data.data.decode('utf-8')
 
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             if outfile:
                 try:
                     outfile = outfile + ".signed"
@@ -206,24 +205,24 @@ class PGPPySuite:
                 print('\n[+] Message signed successfully\n')
                 print(signed_message)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error signing message\n")
             sys.exit(1)
 
     # VERIFY SIGNATURES
-    def verify_signature(self, pgpkey, message):
-        gpg = gnupg.GPG(gnupghome=self.temp_dir)
+    def verify_signature(self, pgp_key, message):
+        gpg = gnupg.GPG(gnupghome=self._temp_dir)
 
         try:
-            with open(pgpkey, 'r') as f:
+            with open(pgp_key, 'r') as f:
                 key_data = f.read()
                 import_result = gpg.import_keys(key_data)
                 if import_result.count == 0:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print('\n[!] Failed to import public key\n')
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such public/private key\n")
             sys.exit(1)
 
@@ -233,22 +232,22 @@ class PGPPySuite:
             with open(message, 'r') as f:
                 signed_message = f.read()
                 if signed_message is None:
-                    self.rmdir(self.temp_dir)
+                    self.__cleanup__(self._temp_dir)
                     print("\n[!] Empty or corrupted signed message. Unable to verify\n")
                     sys.exit(1)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] No such message to verify\n")
             sys.exit(1)
 
         try:
             verified = gpg.verify(signed_message)
         except:
-            self.rmdir(self.temp_dir)
+            self.__cleanup__(self._temp_dir)
             print("\n[!] Error verifying signature\n")
             sys.exit(1)
 
-        self.rmdir(self.temp_dir)
+        self.__cleanup__(self._temp_dir)
         if verified.fingerprint == pgp_key and verified.valid:
             print("\n[+] Valid signature\n")
         else:
@@ -268,43 +267,43 @@ def main():
 
     # ENCRYPT MESSAGE
     enc_parser = subparsers.add_parser('encrypt', description='Encrypt message with PGP')
-    enc_parser.add_argument('-k', '--pgp-key', dest='pgpkey', type=str, help='Path to PGP public key (Asymmetric) or private key (Symmetric)', required=True)
+    enc_parser.add_argument('-k', '--pgp-key', dest='pgp_key', type=str, help='Path to PGP public key (Asymmetric) or private key (Symmetric)', required=True)
     enc_parser.add_argument('-m', '--message', dest='message', type=str, help='Message to encrypt', required=True)
     enc_parser.add_argument('-o', '--outfile', dest='outfile', type=str, help='Path to save the PGP message encrypted', required=False)
 
     # DECRYPT MESSAGES
     dec_parser = subparsers.add_parser('decrypt', description='Decrypt PGP encrypted message')
-    dec_parser.add_argument('-k', '--private-key', dest='privkey', type=str, help='Path to PGP private key', required=True)
+    dec_parser.add_argument('-k', '--private-key', dest='priv_key', type=str, help='Path to PGP private key', required=True)
     dec_parser.add_argument('-p', '--passphrase', dest='passphrase', type=str, help='PGP private key password', required=True)
     dec_parser.add_argument('-m', '--message-file', dest='message', type=str, help='Path to PGP message encrypted', required=True)
     dec_parser.add_argument('-o', '--outfile', dest='outfile', type=str, help='Path to save the message decrypted', required=False)
 
     # SIGNING MESSAGES
     sign_parser = subparsers.add_parser('sign', description='Sign message with PGP')
-    sign_parser.add_argument('-c', '--public-key', dest='pubkey', type=str, help='Path to PGP Public Key file', required=True)
-    sign_parser.add_argument('-k', '--private-key', dest='privkey', type=str, help='Path to PGP Private Key file', required=True)
+    sign_parser.add_argument('-c', '--public-key', dest='pub_key', type=str, help='Path to PGP Public Key file', required=True)
+    sign_parser.add_argument('-k', '--private-key', dest='priv_key', type=str, help='Path to PGP Private Key file', required=True)
     sign_parser.add_argument('-p', '--passphrase', dest='passphrase', type=str, help='PGP Private Key password', required=True)
     sign_parser.add_argument('-m', '--message', dest='message', type=str, help='Message to sign', required=True)
     sign_parser.add_argument('-o', '--outfile', dest='outfile', type=str, help='Path to save the PGP sessage signed', required=False)
 
     # VERIFY SIGNATURES
     verify_parser = subparsers.add_parser('verify', description='Verify signature with PGP')
-    verify_parser.add_argument('-k', '--pgp-key', dest='pgpkey', type=str, help='Path to PGP public key (Asymmetric) or private key (Symmetric)', required=True)
+    verify_parser.add_argument('-k', '--pgp-key', dest='pgp_key', type=str, help='Path to PGP public key (Asymmetric) or private key (Symmetric)', required=True)
     verify_parser.add_argument('-m', '--signed-message', dest='message', type=str, help='Path to signed message', required=True)
 
     args = parser.parse_args()
-    pgppy = PGPPySuite()
+    pgp_py = PGPPySuite()
 
     if args.command == 'generate':
-        pgppy.gen_keys(args.passphrase, args.name, args.email, args.base_name, args.bits)
+        pgp_py.gen_keys(args.passphrase, args.name, args.email, args.base_name, args.bits)
     elif args.command == 'encrypt':
-        pgppy.encrypt_message(args.pgpkey, args.message, args.outfile)
+        pgp_py.encrypt_message(args.pgp_key, args.message, args.outfile)
     elif args.command == 'decrypt':
-        pgppy.decrypt_message(args.privkey, args.passphrase, args.message, args.outfile)
+        pgp_py.decrypt_message(args.priv_key, args.passphrase, args.message, args.outfile)
     elif args.command == 'sign':
-        pgppy.sign_message(args.pubkey, args.privkey, args.passphrase, args.message, args.outfile)
+        pgp_py.sign_message(args.pub_key, args.priv_key, args.passphrase, args.message, args.outfile)
     elif args.command == 'verify':
-        pgppy.verify_signature(args.pgpkey, args.message)
+        pgp_py.verify_signature(args.pgp_key, args.message)
     else:
         parser.print_help()
 
