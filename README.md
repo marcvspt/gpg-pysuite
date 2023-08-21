@@ -1,7 +1,7 @@
-# PGP Python Suite
-In this repository we have a  tool that use `python-gnupg`, **PGP Python Suite** doesn't import the PGP keys in the machine, the keys that you can generate are going to be exported in `.asc` files on the current directory.
+# GPG Python Suite
+In this repository we have a tool that use `python-gnupg`, **GPG Python Suite** doesn't import the **GPG keys** in the machine, the keys that you can generate are going to be exported in `.asc` files on the current directory.
 
-- [PGP Python Suite](#pgp-python-suite)
+- [GPG Python Suite](#gpg-python-suite)
   - [Install](#install)
   - [Usage](#usage)
     - [Generate keys](#generate-keys)
@@ -12,115 +12,110 @@ In this repository we have a  tool that use `python-gnupg`, **PGP Python Suite**
 
 ## Install
 ```bash
-git clone https://github.com/marcvspt/pgpysuite
-cd pgpysuite
+git clone https://github.com/marcvspt/gpg-pysuite
+cd gpg-pysuite
 python3 -m pip install -r requeriments.txt
-python3 pgpysuite.py -h
+python3 gpg_pysuite.py -h
 ```
 
 ## Usage
 ```bash
-$ python3 pgpysuite.py -h
-usage: pgpysuite.py [-h] {generate,encrypt,decrypt,sign,verify} ...
+$ python3 gpg_pysuite.py -h
+usage: gpg_pysuite.py [-h] {generate,encrypt,decrypt,sign,verify}
 
-PGP Python suite
+GnuPG Python suite
 
 positional arguments:
-    {generate,encrypt,decrypt,sign,verify}
+  {generate,encrypt,decrypt,sign,verify}
 
-optional arguments:
-    -h, --help          show this help message and exit
+options:
+  -h, --help            show this help message and exit
 ```
 
 ### Generate keys
 ```bash
-$ python3 pgpysuite.py generate -h
-usage: pgpysuite.py generate [-h] -p PASSPHRASE -n NAME -e EMAIL [-b BASE_NAME] [--bits BITS]
+$ python3 gpg_pysuite.py generate -h
+usage: gpg_pysuite.py generate [-h] -p PASSPHRASE -n NAME -e EMAIL [-b BASE_NAME] [--bits BITS]
 
-Generate PGP key pair
+Generate GPG key pair RSA
 
-optional arguments:
-    -h, --help          show this help message and exit
-    -p PASSPHRASE, --passphrase PASSPHRASE
+options:
+  -h, --help            show this help message and exit
+  -p PASSPHRASE, --passphrase PASSPHRASE
                         Password for the private key
-    -n NAME, --name NAME  User name
-    -e EMAIL, --email EMAIL
+  -n NAME, --name NAME  User name
+  -e EMAIL, --email EMAIL
                         User e-mail
-    -b BASE_NAME, --base-name BASE_NAME
+  -b BASE_NAME, --base-name BASE_NAME
                         Base name for the keys
-    --bits BITS           Key length in bits
+  --bits BITS           Key length in bits
 ```
 
 ### Encrypt messages
 The tool can encrypt the messages with the **public key** (Asymmetric) and **private key** (Symmetric).
 ```bash
-$ python3 pgpysuite.py encrypt -h
-usage: pgpysuite.py encrypt [-h] -k PGPKEY -m MESSAGE [-o OUTFILE]
+$ python3 gpg_pysuite.py encrypt -h
 
-Encrypt message with PGP
+Encrypt message with GPG
 
-optional arguments:
-    -h, --help          show this help message and exit
-    -k PGPKEY, --pgp-key PGPKEY
-                        Path to PGP public pey (Asymmetric) or private key (Symmetric)
-    -m MESSAGE, --message MESSAGE
+options:
+  -h, --help            show this help message and exit
+  -k GPG_KEY, --gpg-key GPG_KEY
+                        Path to GPG public key (Asymmetric) or private key (Symmetric)
+  -m MESSAGE, --message MESSAGE
                         Message to encrypt
-    -o OUTFILE, --outfile OUTFILE
-                        Path to save the PGP message encrypted
+  -o OUTFILE, --outfile OUTFILE
+                        Path to save the GPG message encrypted
 ```
 
 ### Decrypt messages
 ```bash
-$ python3 pgpysuite.py decrypt -h
-usage: pgpysuite.py decrypt [-h] -k PRIVKEY -p PASSPHRASE -m MESSAGE [-o OUTFILE]
+$ python3 gpg_pysuite.py decrypt -h
 
-Decrypt PGP encrypted message
+Decrypt GPG encrypted message
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -k PRIVKEY, --private-key PRIVKEY
-                        Path to PGP private key
+  -k PRIV_KEY, --private-key PRIV_KEY
+                        Path to GPG private key
   -p PASSPHRASE, --passphrase PASSPHRASE
-                        PGP private key password
+                        GPG private key password
   -m MESSAGE, --message-file MESSAGE
-                        Path to PGP message encrypted
+                        Path to GPG message encrypted
   -o OUTFILE, --outfile OUTFILE
                         Path to save the message decrypted
 ```
 
 ### Signing messages
 ```bash
-$ python3 pgpysuite.py sign -h
-usage: pgpysuite.py sign [-h] -c PUBKEY -k PRIVKEY -p PASSPHRASE -m MESSAGE [-o OUTFILE]
+$ python3 gpg_pysuite.py sign -h
+usage: gpg_pysuite.py sign [-h] -c PUBKEY -k PRIVKEY -p PASSPHRASE -m MESSAGE [-o OUTFILE]
 
-Sign message with PGP
+Sign message with GPG
 
-optional arguments:
-    -h, --help          show this help message and exit
-    -c PUBKEY, --public-key PUBKEY
-                        Path to PGP Public Key file
-    -k PRIVKEY, --private-key PRIVKEY
-                        Path to PGP Private Key file
-    -p PASSPHRASE, --passphrase PASSPHRASE
-                        PGP Private Key password
-    -m MESSAGE, --message MESSAGE
+options:
+  -h, --help            show this help message and exit
+  -k PRIV_KEY, --private-key PRIV_KEY
+                        Path to GPG private key
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        GPG Private Key password
+  -m MESSAGE, --message MESSAGE
                         Message to sign
-    -o OUTFILE, --outfile OUTFILE
-                        Path to save the PGP sessage signed
+  -o OUTFILE, --outfile OUTFILE
+                        Path to save the GPG sessage signed
 ```
 
 ### Verify signatures
-The tool can verify the signatures with the **public key** (Asymmetric) and **private key** (Symmetric).
+The tool can verify the signatures with the **public key**.
 ```bash
-$ python3 pgpysuite.py verify -h
-usage: pgpysuite.py verify [-h] -k PGPKEY -m MESSAGE
+$ python3 gpg_pysuite.py verify -h
 
-Verify signature with PGP
+Verify signature with GPG
 
-optional arguments:
-    -h, --help          show this help message and exit
-    -k PGPKEY, --pgp-key PGPKEY
-                        Path to PGP public key (Asymmetric) or private key (Symmetric)
-    -m MESSAGE, --signed-message MESSAGE
+options:
+  -h, --help            show this help message and exit
+  -c PUB_KEY, --public-key PUB_KEY
+                        Path to GPG public key
+  -m MESSAGE, --signed-message MESSAGE
                         Path to signed message
 ```
