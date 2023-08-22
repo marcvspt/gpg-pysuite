@@ -3,6 +3,8 @@ In this repository we have a tool that use `python-gnupg`, **GPG Python Suite** 
 
 - [GPG Python Suite](#gpg-python-suite)
   - [Install](#install)
+    - [CLI configuration](#cli-configuration)
+    - [VSCode configuration](#vscode-configuration)
   - [Usage](#usage)
     - [Generate keys](#generate-keys)
     - [Encrypt messages](#encrypt-messages)
@@ -11,12 +13,28 @@ In this repository we have a tool that use `python-gnupg`, **GPG Python Suite** 
     - [Verify signatures](#verify-signatures)
 
 ## Install
+First install `pipenv` or `python-pipenv`/`python3-pipenv` (depends how was named by your package manager). Install it with `pip`/`pip3` is possible, but in **2023**, **PyPi** recomends use your package manager to install libraries and packages.
+
 ```bash
 git clone https://github.com/marcvspt/gpg-pysuite
 cd gpg-pysuite
-python3 -m pip install -r requeriments.txt
-python3 gpg_pysuite.py -h
 ```
+
+### CLI configuration
+```bash
+pipenv install
+pipenv shell
+```
+
+### VSCode configuration
+If you do the normal terminal instalation inside vscode terminal, you have to close and reopen the application or do this:
+1. Open `Command Palette`. Linux and Windows: `Ctrl + Shift + P`. For MacOS: `Command + Shift + P`
+2. Type `> clear cache and reload window`.
+
+Now configure the python interpreter:
+1. Open `Command Palette`. Linux and Windows: `Ctrl + Shift + P`. For MacOS: `Command + Shift + P`
+2. Type `> python select interpreter`.
+3. Select **PipEnv** option.
 
 ## Usage
 ```bash
@@ -53,6 +71,7 @@ options:
 
 ### Encrypt messages
 The tool can encrypt the messages with the **public key** (Asymmetric) and **private key** (Symmetric).
+
 ```bash
 $ python3 gpg_pysuite.py encrypt -h
 
@@ -107,6 +126,7 @@ options:
 
 ### Verify signatures
 The tool can verify the signatures with the **public key**.
+
 ```bash
 $ python3 gpg_pysuite.py verify -h
 
