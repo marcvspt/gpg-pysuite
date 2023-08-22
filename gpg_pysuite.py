@@ -36,6 +36,7 @@ class GPGPySuite:
             sys.exit(1)
 
     def __import_key__(self, gpg, key_file):
+        """Private method: import gpg keys"""
         try:
             with open(key_file, 'r', encoding=self._format_encoding) as file_name:
                 content = file_name.read()
@@ -48,6 +49,7 @@ class GPGPySuite:
         return data.fingerprints[0]
 
     def __export_key__(self, gpg, key_file, base_name, passwd, is_private=False):
+        """Private method: export gpg keys"""
         fingerprint = key_file.fingerprint
         key_data = gpg.export_keys(fingerprint, secret=is_private, passphrase=passwd)
         extension = '.priv.asc' if is_private else '.pub.asc'
@@ -62,6 +64,7 @@ class GPGPySuite:
             sys.exit(1)
 
     def __import_data__(self, data):
+        """Private method: import data like plaintext, encrypted or sigened messages"""
         try:
             with open(data, 'r', encoding=self._format_encoding) as file_name:
                 content = file_name.read()
@@ -77,6 +80,7 @@ class GPGPySuite:
             sys.exit(1)
 
     def __export_data__(self, data, outfile):
+        """Private method: export data like plaintext, encrypted or signed messages"""
         try:
             with open(outfile, 'w', encoding=self._format_encoding) as file_name:
                 file_name.write(data)
