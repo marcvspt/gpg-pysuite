@@ -1,8 +1,7 @@
 *.asc
 *.encrypted
 *.signed
-bin/
-include/
-lib/
-lib64/
+bin*
+include*
+lib*
 pyvenv.cfg
