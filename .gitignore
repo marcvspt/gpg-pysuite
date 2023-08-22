@@ -1,7 +1,4 @@
 *.asc
 *.encrypted
 *.signed
-bin*
-include*
-lib*
-pyvenv.cfg
+Pipfile.lock
