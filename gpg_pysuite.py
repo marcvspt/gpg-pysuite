@@ -20,7 +20,7 @@ import gnupg
 class GPGPySuite:
     """Class: use functions from python-gnupg"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Private method: constructor (create temp-home gnupg directory)"""
         self._temp_dir = tempfile.mkdtemp()
         self._format_encoding = 'utf-8'

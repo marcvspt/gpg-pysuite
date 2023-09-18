@@ -1,5 +1,4 @@
 *.asc
 *.encrypted
 *.signed
-Pipfile.lock
 .pytest_cache

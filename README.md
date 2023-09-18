@@ -1,10 +1,9 @@
 # GPG Python Suite
+
 In this repository we have a tool that use `python-gnupg`, **GPG Python Suite** doesn't import the **GPG keys** in the machine, the keys that you can generate are going to be exported in `.asc` files on the current directory.
 
 - [GPG Python Suite](#gpg-python-suite)
-  - [Install](#install)
-    - [CLI configuration](#cli-configuration)
-    - [VSCode configuration](#vscode-configuration)
+  - [Download and Install](#download-and-install)
   - [Usage](#usage)
     - [Generate keys](#generate-keys)
     - [Encrypt messages](#encrypt-messages)
@@ -12,31 +11,16 @@ In this repository we have a tool that use `python-gnupg`, **GPG Python Suite** 
     - [Signing messages](#signing-messages)
     - [Verify signatures](#verify-signatures)
 
-## Install
-First install `pipenv` or `python-pipenv`/`python3-pipenv` (depends how was named by your package manager). Install it with `pip`/`pip3` is possible, but in **2023**, **PyPi** recomends use your package manager to install libraries and packages.
+## Download and Install
 
 ```bash
 git clone https://github.com/marcvspt/gpg-pysuite
-cd gpg-pysuite
+cd gpg-pysuite/
+pip3 install -r requirements.txt
 ```
-
-### CLI configuration
-```bash
-pipenv install
-pipenv shell
-```
-
-### VSCode configuration
-If you do the normal terminal instalation inside vscode terminal, you have to close and reopen the application or do this:
-1. Open `Command Palette`. Linux and Windows: `Ctrl + Shift + P`. For MacOS: `Command + Shift + P`
-2. Type `> clear cache and reload window`.
-
-Now configure the python interpreter:
-1. Open `Command Palette`. Linux and Windows: `Ctrl + Shift + P`. For MacOS: `Command + Shift + P`
-2. Type `> python select interpreter`.
-3. Select **PipEnv** option.
 
 ## Usage
+
 ```bash
 $ python3 gpg_pysuite.py -h
 usage: gpg_pysuite.py [-h] {generate,encrypt,decrypt,sign,verify}
@@ -51,6 +35,7 @@ options:
 ```
 
 ### Generate keys
+
 ```bash
 $ python3 gpg_pysuite.py generate -h
 usage: gpg_pysuite.py generate [-h] -p PASSPHRASE -n NAME -e EMAIL [-b BASE_NAME] [--bits BITS]
@@ -70,6 +55,7 @@ options:
 ```
 
 ### Encrypt messages
+
 The tool can encrypt the messages with the **public key** (Asymmetric) and **private key** (Symmetric).
 
 ```bash
@@ -88,6 +74,7 @@ options:
 ```
 
 ### Decrypt messages
+
 ```bash
 $ python3 gpg_pysuite.py decrypt -h
 
@@ -106,6 +93,7 @@ options:
 ```
 
 ### Signing messages
+
 ```bash
 $ python3 gpg_pysuite.py sign -h
 usage: gpg_pysuite.py sign [-h] -c PUBKEY -k PRIVKEY -p PASSPHRASE -m MESSAGE [-o OUTFILE]
@@ -125,6 +113,7 @@ options:
 ```
 
 ### Verify signatures
+
 The tool can verify the signatures with the **public key**.
 
 ```bash
